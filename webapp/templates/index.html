@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Квасоварня</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="/static/css/customstyle.css" rel="stylesheet">
+
+
+  </head>
+  <body>
+    <h1 class="text-center">Квасоварня</h1>
+
+    <div id="chart" style="min-width: 380px; height: 400px; margin: 0 auto;"></div>
+
+    <div id="status">
+        <p>состояние - нагревается</p>
+        <p>t=12414</p>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="/static/js/jquery-3.1.0.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/highcharts.js"></script>
+
+    <script>
+      $(function () {
+      $(document).ready(function () {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+
+        $('#chart').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                backgroundColor: 'rgba(255,255,255,0)',
+                events: {
+                    load: function () {
+
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        setInterval(function () {
+                            $.get('/api/getTemp', function(data) {
+                                var x = (new Date()).getTime(); // current time
+                                series.addPoint([x, data.value], true, true);
+                            })
+                        }, 1000);
+                    }
+                }
+            },
+            title: {
+                text: 'Температура в термостате',
+                style: {
+                  color: '#F0F0F0',
+                  fontFamily: 'Pattaya'
+                }
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Temperature (°C)',
+                    style: {
+                        color: '#F0F0F0'
+                    }
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#F0F0F0'
+                }]
+            },
+            plotOptions : {
+                line : {
+                    dataLabels : {
+                        enabled : true
+                    },
+                    enableMouseTracking: false
+                }
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 2) + 'C';
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Temp',
+                data: (function () {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+
+                    for (i = -190; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: Math.random()
+                        });
+                    }
+                    return data;
+                }()),
+                color : '#F0F0F0'
+            }]
+        });
+      });
+      });
+    </script>
+  </body>
+</html>

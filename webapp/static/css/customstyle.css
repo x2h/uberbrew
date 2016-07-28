@@ -1,0 +1,21 @@
+body {
+	background: url('/static/img/bg-white-opacity.png') repeat 63% 63%;
+	background-color: #3d362d;
+	color: #F2F2F2;
+}
+
+@font-face {
+	font-family: 'Pattaya';
+	src: url('/static/fonts/Pattaya-Regular.ttf');
+}
+
+h1 {
+	font-family: 'Pattaya';
+	font-size: 10em;
+}
+
+#status {
+	text-align: center;
+	font-family: 'Pattaya';
+	font-size: 4em;
+}
